@@ -14,16 +14,18 @@ import android.widget.Toast;
 import com.example.retrofit.ModelResponse.LoginResponse;
 import com.example.retrofit.R;
 import com.example.retrofit.RetrofitClient;
+import com.example.retrofit.SharedPreference;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class loginActivity extends AppCompatActivity implements View.OnClickListener {
+public class  loginActivity extends AppCompatActivity implements View.OnClickListener {
 
     EditText email,password;
     TextView registerlink;
     Button login;
+    SharedPreference sharedPreference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +39,7 @@ public class loginActivity extends AppCompatActivity implements View.OnClickList
 
         registerlink.setOnClickListener(this);
         login.setOnClickListener(this);
+        sharedPreference = new SharedPreference(getApplicationContext());
     }
 
     @Override
@@ -89,15 +92,14 @@ public class loginActivity extends AppCompatActivity implements View.OnClickList
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
 
                 LoginResponse loginResponse = response.body();
-                if (response.isSuccessful()){
-
-                    Intent intent = new Intent(loginActivity.this,HomeActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                    Toast.makeText(loginActivity.this, loginResponse.getMessage(), Toast.LENGTH_SHORT).show();
-
-
-
+                if (response.isSuccessful()) {
+                    if (loginResponse.getError().equals("200")) {
+                        sharedPreference.SaveUser(loginResponse.getUser());
+                        Intent intent = new Intent(loginActivity.this, HomeActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        Toast.makeText(loginActivity.this, loginResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
                 }
 
             }
@@ -109,9 +111,16 @@ public class loginActivity extends AppCompatActivity implements View.OnClickList
 
             }
         });
+    }
 
+    @Override
+    protected void onStart() {
+        if (sharedPreference.isLoggedIn()){
+            Intent intent = new Intent(loginActivity.this, HomeActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        }
 
-
-
+        super.onStart();
     }
 }
