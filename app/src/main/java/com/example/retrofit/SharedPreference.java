@@ -40,7 +40,7 @@ public class SharedPreference {
                 sharedPreference.getString("email",null));
 
     }
-    void logOut(){
+    public void logOut(){
         sharedPreference = context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         editor = sharedPreference.edit();
         editor.clear();
