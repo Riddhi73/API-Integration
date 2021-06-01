@@ -10,12 +10,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.example.retrofit.ModelResponse.DeleteResponse;
 import com.example.retrofit.NavFragments.DashboardFragment;
 import com.example.retrofit.NavFragments.ProfileFragment;
 import com.example.retrofit.NavFragments.UserFragment;
 import com.example.retrofit.R;
+import com.example.retrofit.RetrofitClient;
 import com.example.retrofit.SharedPreference;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class HomeActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
@@ -92,6 +98,35 @@ public class HomeActivity extends AppCompatActivity implements BottomNavigationV
     }
 
     private void deleteaccnt() {
+
+        Call<DeleteResponse> call = RetrofitClient.getInstance().getApi().DeleteUser(sharedPreference.getuser().getId());
+
+        call.enqueue(new Callback<DeleteResponse>() {
+            @Override
+            public void onResponse(Call<DeleteResponse> call, Response<DeleteResponse> response) {
+
+                DeleteResponse deleteResponse = response.body();
+                if (response.isSuccessful()){
+                    if (deleteResponse.getError().equals("200")){
+                        logOutUser();
+                        Toast.makeText(HomeActivity.this, deleteResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        Toast.makeText(HomeActivity.this, deleteResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else{
+                    Toast.makeText(HomeActivity.this, "failed", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DeleteResponse> call, Throwable t) {
+                Toast.makeText(HomeActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
     }
 
     private void logOutUser() {

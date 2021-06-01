@@ -1,5 +1,6 @@
 package com.example.retrofit;
 
+import com.example.retrofit.ModelResponse.DeleteResponse;
 import com.example.retrofit.ModelResponse.Fetchuserresponse;
 import com.example.retrofit.ModelResponse.LoginResponse;
 import com.example.retrofit.ModelResponse.RegisterResponse;
@@ -54,10 +55,8 @@ public interface API {
 
     @FormUrlEncoded
     @POST("deleteaccount.php")
-    Call<UpdatePassResponse> updateUserpass(
-            @Field("email") String email,
-            @Field("current") String currentPass,
-            @Field("new") String newPass
+    Call<DeleteResponse> DeleteUser(
+            @Field("id") int userId
 
     );
 
